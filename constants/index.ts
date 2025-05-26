@@ -1,4 +1,4 @@
-import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
+import { CreateAssistantDTO,  CreateWorkflowDTO  } from "@vapi-ai/web/dist/api";
 import { z } from "zod";
 
 export const mappings = {
@@ -228,3 +228,172 @@ export const dummyInterviews: Interview[] = [
     createdAt: "2024-03-14T15:30:00Z",
   },
 ];
+
+
+export const generator: CreateWorkflowDTO = {
+  "name": "ivprep",
+  "nodes": [
+    {
+      "name": "start",
+      "type": "conversation",
+      "isStart": true,
+      "metadata": {
+        "position": { "x": 215.39484010877993, "y": -109.41830203855014 }
+      },
+      "prompt": "Greet the user and help them create a new AI Interviewer.",
+      "model": {
+        "model": "gpt-4o",
+        "provider": "openai",
+        "maxTokens": 1000,
+        "temperature": 0.7
+      },
+      "voice": {
+        "model": "aura-2",
+        "voiceId": "thalia",
+        "provider": "deepgram"
+      },
+      "variableExtractionPlan": {
+        "output": [
+          {
+            "enum": [],
+            "type": "string",
+            "title": "role",
+            "description": "What role would you like to train for?"
+          },
+          {
+            "enum": ["technical", "behavioral", "mixed"],
+            "type": "string",
+            "title": "type",
+            "description": "Aiming for a technical or a behavioral interview?"
+          },
+          {
+            "enum": ["fresher", "mid", "senior"],
+            "type": "string",
+            "title": "level",
+            "description": "The job experience level"
+          },
+          {
+            "enum": [],
+            "type": "string",
+            "title": "techstack",
+            "description": "a list of technologies to cover during the job interview"
+          },
+          {
+            "enum": [],
+            "type": "integer",
+            "title": "amount",
+            "description": "How many questions would you like me to prepare for you?"
+          }
+        ]
+      },
+
+    },
+    {
+      "name": "conversation_1748286483210",
+      "type": "conversation",
+      "metadata": {
+        "position": { "x": 395.488002967665, "y": 794.7800424907334 }
+      },
+      "prompt": "Tell the user that the interview has been generated, and thank the user for the call.",
+      "model": {
+        "model": "gpt-4o",
+        "provider": "openai",
+        "maxTokens": 1000,
+        "temperature": 0.7
+      },
+    },
+    {
+      "name": "hangup_1748286559915",
+      "type": "conversation",
+      "metadata": {
+        "position": { "x": 490.8940669453756, "y": 1026.0466906133247 }
+      },
+    },
+    {
+      "name": "node_1748288031493",
+      "type": "conversation",
+      "metadata": {
+        "position": { "x": 257.8728904168921, "y": 285.6448564565645 }
+      },
+      "prompt": "Say that the Interview will be generated shortly.",
+      "model": {
+        "model": "gpt-4o",
+        "provider": "openai",
+        "maxTokens": 1000,
+        "temperature": 0.7
+      },
+    },
+    {
+      "name": "node_1748288087132",
+      "type": "tool",
+      "metadata": {
+        "position": { "x": 437.1405198759046, "y": 512.2605212898214 }
+      },
+      "tool": {
+        "url": "{{baseUrl}}/api/vapi/generate",
+        "body": {
+          "type": "object",
+          "required": ["level", "role", "type", "techstack", "amount", "userid"],
+          "properties": {
+            "role": { "type": "string", "value": "{{role}}" },
+            "type": { "type": "string", "value": "{{type}}" },
+            "level": { "type": "string", "value": "{{level}}" },
+            "amount": { "type": "integer", "value": "{{amount}}" },
+            "userid": { "type": "string", "value": "{{userid}}" },
+            "techstack": { "type": "string", "value": "{{techstack}}" }
+          }
+        },
+        "type": "apiRequest",
+        "method": "POST",
+        "function": {
+          "name": "untitled_tool",
+          "parameters": {
+            "type": "object",
+            "required": [],
+            "properties": {}
+          }
+        }
+      },
+    }
+  ],
+  "edges": [
+    {
+      "from": "conversation_1748286483210",
+      "to": "hangup_1748286559915",
+      "condition": {
+        "type": "ai",
+        "prompt": ""
+      }
+    },
+    {
+      "from": "start",
+      "to": "node_1748288031493",
+      "condition": {
+        "type": "ai",
+        "prompt": "If user provided all the required variables"
+      }
+    },
+    {
+      "from": "node_1748288031493",
+      "to": "node_1748288087132",
+      "condition": {
+        "type": "ai",
+        "prompt": ""
+      }
+    },
+    {
+      "from": "node_1748288087132",
+      "to": "conversation_1748286483210",
+      "condition": {
+        "type": "ai",
+        "prompt": ""
+      }
+    }
+  ],
+ "model": {
+  "model": "gpt-4o",
+  "provider": "openai",
+  "temperature": 0.7,
+  "maxTokens": 1000
+},
+};

@@ -2,6 +2,7 @@ import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 import { getRandomInterviewCover } from "@/lib/utils";
 import { db } from "@/firebase/admin";
+import { getCurrentUser } from "@/lib/actions/auth.action";
 
 export async function GET() {
   return Response.json(
@@ -16,10 +17,30 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return Response.json(
+      { success: false, message: "Unauthorized" },
+      { status: 401 }
+    );
+  }
   const { type, role, level, techstack, amount, userid } = await request.json();
+  if (!type || !role || !level || !techstack || !amount) {
+    return Response.json(
+      { success: false, message: "Missing required fields" },
+      { status: 400 }
+    );
+  }
 
   try {
-    const { text : questions } = await generateText({
+    if (userid !== user.id) {
+      return Response.json(
+        { success: false, message: "Forbidden" },
+        { status: 403 }
+      );
+    }
+    const { text: questions } = await generateText({
       model: google("gemini-2.0-flash-001"),
       prompt: `Prepare questions for a job interview.
         The job role is ${role}.
@@ -35,20 +56,31 @@ export async function POST(request: Request) {
         Thank you! <3
     `,
     });
+    let parsedQuestions;
+    try {
+      parsedQuestions = JSON.parse(questions);
+    } catch {
+      return Response.json(
+        { success: false, message: "Failed to parse questions from AI" },
+        { status: 500 }
+      );
+    }
 
     const interview = {
-      role,type,level,
-      techstack: techstack.split(', '),
-      questions: JSON.parse(questions),
-      userID: userid,
-      finalized : true,
-      coverImage : getRandomInterviewCover(),
-      createdAt : new Date().toISOString()
-    }
+      role,
+      type,
+      level,
+      techstack: techstack.split(", "),
+      questions: parsedQuestions,
+      userID: user.id,
+      finalized: true,
+      coverImage: getRandomInterviewCover(),
+      createdAt: new Date().toISOString(),
+    };
 
     await db.collection("interviews").add(interview);
 
-    return Response.json({success:true},{status:200})
+    return Response.json({ success: true }, { status: 200 });
   } catch (error) {
     console.log(error);
     return Response.json({ success: false, error }, { status: 500 });
