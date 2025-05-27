@@ -2,10 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { vapi } from "@/lib/vapi.sdk";
-import { generator } from "@/constants/index";
+import { generator, interviewer } from "@/constants/index";
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -19,7 +19,7 @@ interface SavedMessage {
   content: string;
 }
 
-const Agent = ({ userName, userId, type }: AgentProps) => {
+const Agent = ({ userName, userId, type, interviewId, questions }: AgentProps) => {
   const router = useRouter();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
@@ -62,11 +62,35 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
     };
   }, []);
 
+  const handleGenerateFeedback=async(messages: SavedMessage[])=>{
+
+    console.log('Generate Feedback here');
+    const {success, id} ={
+      success:true,
+      id: 'feedback-id'
+    }
+
+    if(success && id){
+      router.push(`/interview/${interviewId}/feedback`)
+    }else{
+      console.log('Error saving feedback');
+      router.push('/');
+    }
+  }
+
+
   useEffect(() => {
-    if (callStatus === CallStatus.FINISHED) router.push("/");
+    if(callStatus === CallStatus.FINISHED){
+      if(type === 'generate'){
+        router.push("/");
+      }else{
+        handleGenerateFeedback(messages);
+      }
+    }
+ 
   }, [messages, callStatus, type, userId]);
 
-const handleCall = async () => {
+  const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
 
     if (type === "generate") {
@@ -87,7 +111,7 @@ const handleCall = async () => {
       let formattedQuestions = "";
       if (questions) {
         formattedQuestions = questions
-          .map((question : any) => `- ${question}`)
+          .map((question: any) => `- ${question}`)
           .join("\n");
       }
 
@@ -104,6 +128,10 @@ const handleCall = async () => {
     setCallStatus(CallStatus.FINISHED);
     vapi.stop();
   };
+
+  const latestMessage = messages[messages.length - 1]?.content;
+  const isCallInactiveOrFinished =
+    callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
 
   return (
     <>
@@ -139,13 +167,13 @@ const handleCall = async () => {
         <div className="transcript-border">
           <div className="transcript">
             <p
-              key={lastMessage}
+              key={latestMessage}
               className={cn(
                 "transition-opacity duration-500 opacity-0",
                 "animate-fadeIn opacity-100"
               )}
             >
-              {lastMessage}
+              {latestMessage}
             </p>
           </div>
         </div>
@@ -153,21 +181,17 @@ const handleCall = async () => {
 
       <div className="w-full flex justify-center">
         {callStatus !== "ACTIVE" ? (
-          <button className="relative btn-call">
+          <button className="relative btn-call" onClick={handleCall}>
             <span
               className={cn(
                 "absolute animate-ping rounded-full opacity-75",
                 callStatus !== "CONNECTING" && "hidden"
               )}
             />
-            <span>
-              {callStatus === "INACTIVE" || callStatus === "FINISHED"
-                ? "Call"
-                : "..."}
-            </span>
+            <span>{isCallInactiveOrFinished ? "Call" : ". . ."}</span>
           </button>
         ) : (
-          <button className="btn-disconnect">End</button>
+          <button className="btn-disconnect" onClick={handleDisconnect}>End</button>
         )}
       </div>
     </>
