@@ -1,3 +1,5 @@
+"use server";
+
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 import { getRandomInterviewCover } from "@/lib/utils";
@@ -72,7 +74,7 @@ export async function POST(request: Request) {
       level,
       techstack: techstack.split(", "),
       questions: parsedQuestions,
-      userID: user.id,
+      userId: user.id,
       finalized: true,
       coverImage: getRandomInterviewCover(),
       createdAt: new Date().toISOString(),

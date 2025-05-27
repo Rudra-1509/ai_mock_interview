@@ -37,7 +37,7 @@ const page = async () => {
           src="/robot.png"
           alt="robo-dude"
           width={400}
-          height={40}
+          height={400}
           className="max-sm:hidden"
         />
       </section>
