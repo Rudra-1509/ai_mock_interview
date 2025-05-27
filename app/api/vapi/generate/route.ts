@@ -36,12 +36,6 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (userid !== user.id) {
-      return Response.json(
-        { success: false, message: "Forbidden" },
-        { status: 403 }
-      );
-    }
     const { text: questions } = await generateText({
       model: google("gemini-2.0-flash-001"),
       prompt: `Prepare questions for a job interview.
@@ -74,7 +68,7 @@ export async function POST(request: Request) {
       level,
       techstack: techstack.split(", "),
       questions: parsedQuestions,
-      userId: user.id,
+      userId: userid,
       finalized: true,
       coverImage: getRandomInterviewCover(),
       createdAt: new Date().toISOString(),

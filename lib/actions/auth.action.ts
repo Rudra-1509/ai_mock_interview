@@ -21,6 +21,8 @@ export async function signUp(params: SignUpParams) {
     await db.collection("users").doc(uid).set({
       name,
       email,
+      //profileURL,
+      //resumeURL
     });
 
     return {
@@ -60,9 +62,15 @@ export async function SignIn(params: SignInParams) {
 
     return {
       success: false,
-      message: "Failed to log into an account.",
+      message: "Failed to log into an account. please try again",
     };
   }
+}
+
+export async function signOut() {
+  const cookieStore = await cookies();
+
+  cookieStore.delete("session");
 }
 
 export async function setSessionCookie(idToken: string) {

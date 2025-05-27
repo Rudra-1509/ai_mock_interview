@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 import InterviewCard from "@/components/InterviewCard";
 import { getCurrentUser } from "@/lib/actions/auth.action";
 import {
@@ -9,12 +8,12 @@ import {
   getLatestInterviews,
 } from "@/lib/actions/general.action";
 
-const page = async () => {
+const Home = async () => {
   const user = await getCurrentUser();
 
   const [userInterviews, latestInterviews] = await Promise.all([
-    await getInterviewsByUserId(user!.id!),
-    await getLatestInterviews({ userId: user!.id! }),
+    await getInterviewsByUserId(user?.id!),
+    await getLatestInterviews({ userId: user?.id! }),
   ]);
 
   const hasPastInterviews = userInterviews!.length > 0;
@@ -46,7 +45,15 @@ const page = async () => {
         <div className="interviews-section">
           {hasPastInterviews ? (
             userInterviews!.map((interview) => (
-              <InterviewCard key={interview.id} {...interview} />
+              <InterviewCard
+                key={interview.id}
+                userId={user?.id}
+                interviewId={interview.id}
+                role={interview.role}
+                type={interview.type}
+                techstack={interview.techstack}
+                createdAt={interview.createdAt}
+              />
             ))
           ) : (
             <p>You haven&apos;t taken any interviews yet</p>
@@ -58,7 +65,15 @@ const page = async () => {
         <div className="interviews-section">
           {hasUpcomingInterviews ? (
             userInterviews!.map((interview) => (
-              <InterviewCard key={interview.id} {...interview} />
+              <InterviewCard
+                key={interview.id}
+                userId={user?.id}
+                interviewId={interview.id}
+                role={interview.role}
+                type={interview.type}
+                techstack={interview.techstack}
+                createdAt={interview.createdAt}
+              />
             ))
           ) : (
             <p>There are no interviews available</p>
@@ -69,4 +84,4 @@ const page = async () => {
   );
 };
 
-export default page;
+export default Home;
