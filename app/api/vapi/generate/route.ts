@@ -1,40 +1,21 @@
-"use server";
-
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
-import { getRandomInterviewCover } from "@/lib/utils";
-import { db } from "@/firebase/admin";
 import { getCurrentUser } from "@/lib/actions/auth.action";
+import { db } from "@/firebase/admin";
+import { getRandomInterviewCover } from "@/lib/utils";
+import { NextResponse } from "next/server";
 
-export async function GET() {
-  return Response.json(
-    {
-      success: true,
-      data: "THANK YOU!",
-    },
-    {
-      status: 200,
-    }
-  );
-}
 
 export async function POST(request: Request) {
+  const { type, role, level, techstack, amount } = await request.json();
   const user = await getCurrentUser();
 
   if (!user) {
-    return Response.json(
-      { success: false, message: "Unauthorized" },
+    return NextResponse.json(
+      { success: false, error: "Unauthorized: User not found" },
       { status: 401 }
     );
   }
-  const { type, role, level, techstack, amount, userid } = await request.json();
-  if (!type || !role || !level || !techstack || !amount) {
-    return Response.json(
-      { success: false, message: "Missing required fields" },
-      { status: 400 }
-    );
-  }
-
   try {
     const { text: questions } = await generateText({
       model: google("gemini-2.0-flash-001"),
@@ -53,22 +34,30 @@ export async function POST(request: Request) {
     `,
     });
     let parsedQuestions;
+
     try {
       parsedQuestions = JSON.parse(questions);
-    } catch {
-      return Response.json(
-        { success: false, message: "Failed to parse questions from AI" },
+      if (!Array.isArray(parsedQuestions)) {
+        throw new Error("Questions is not a valid array");
+      }
+    } catch (error) {
+      console.error("Failed to parse questions from LLM:", questions);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to parse questions. Please try again.",
+        },
         { status: 500 }
       );
     }
 
     const interview = {
-      role,
-      type,
-      level,
-      techstack: techstack.split(", "),
+      role: role,
+      type: type,
+      level: level,
+      techstack,
       questions: parsedQuestions,
-      userId: userid,
+      userId: user.id,
       finalized: true,
       coverImage: getRandomInterviewCover(),
       createdAt: new Date().toISOString(),
@@ -76,9 +65,19 @@ export async function POST(request: Request) {
 
     await db.collection("interviews").add(interview);
 
-    return Response.json({ success: true }, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.log(error);
-    return Response.json({ success: false, error }, { status: 500 });
+    console.error("Error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
   }
+}
+
+export async function GET() {
+  return NextResponse.json({ success: true, data: "Thank you!" }, { status: 200 });
 }

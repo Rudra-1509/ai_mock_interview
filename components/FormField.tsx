@@ -13,7 +13,9 @@ interface FormFieldProps<T extends FieldValues> {
   name: Path<T>;
   label: string;
   placeholder?: string;
-  type?: "text" | "email" | "password";
+  type?: "text" | "email" | "password" | "number" | "select";
+  options?: string[];
+  min?: number;
 }
 
 const FormField = <T extends FieldValues>({
@@ -22,6 +24,8 @@ const FormField = <T extends FieldValues>({
   label,
   placeholder,
   type = "text",
+  options = [],
+  min 
 }: FormFieldProps<T>) => {
   return (
     <Controller
@@ -31,12 +35,23 @@ const FormField = <T extends FieldValues>({
         <FormItem>
           <FormLabel className="label">{label}</FormLabel>
           <FormControl>
-            <Input
-              className="input"
-              type={type}
-              placeholder={placeholder}
-              {...field}
-            />
+            {type === "select" ? (
+              <select {...field} className="input">
+                {options.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <Input
+                className="input"
+                type={type}
+                placeholder={placeholder}
+                min={min}
+                {...field}
+              />
+            )}
           </FormControl>
           <FormMessage />
         </FormItem>

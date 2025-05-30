@@ -10,15 +10,20 @@ import {
 
 const Home = async () => {
   const user = await getCurrentUser();
+  if (!user?.id) {
+  // handle no user case — maybe redirect or show message
+  throw new Error("User not authenticated or user ID missing");
+}
 
   const [userInterviews, latestInterviews] = await Promise.all([
     await getInterviewsByUserId(user?.id!),
     await getLatestInterviews({ userId: user?.id! }),
   ]);
 
-  const hasPastInterviews = userInterviews!.length > 0;
-  const hasUpcomingInterviews = latestInterviews!.length > 0;
+  const hasPastInterviews = userInterviews?.length > 0 || 0;
+  const hasUpcomingInterviews = latestInterviews?.length > 0 ;
   return (
+    
     <>
       <section className="card-cta">
         <div className="flex flex-col gap-6 max-w-lg">
@@ -28,7 +33,7 @@ const Home = async () => {
           </p>
 
           <Button asChild className="btn-primary max-sm:w-full">
-            <Link href="/interview">Start an Interview</Link>
+            <Link href="/interview">Issue an Interview</Link>
           </Button>
         </div>
 
@@ -61,7 +66,7 @@ const Home = async () => {
         </div>
       </section>
       <section className="flex flex-col gap-6 mt-8">
-        <h2>Take an Interview</h2>
+        <h2>Try Other&apos;s Interview</h2>
         <div className="interviews-section">
           {hasUpcomingInterviews ? (
             userInterviews!.map((interview) => (

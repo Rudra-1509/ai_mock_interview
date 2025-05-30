@@ -48,6 +48,14 @@ export async function signUp(params: SignUpParams) {
 
 export async function SignIn(params: SignInParams) {
   const { email, idToken } = params;
+
+  if (!email || !idToken) {
+    return {
+      success: false,
+      message: "Missing credentials.",
+    };
+  }
+
   try {
     const userRecord = await auth.getUserByEmail(email);
     if (!userRecord) {
@@ -56,37 +64,54 @@ export async function SignIn(params: SignInParams) {
         message: "User does not exist. Create an account instead.",
       };
     }
+
     await setSessionCookie(idToken);
-  } catch (error) {
-    console.error(error);
 
     return {
+      success: true,
+      message: "Logged in successfully.",
+    };
+  } catch (error) {
+    console.error("SignIn error:", error);
+    return {
       success: false,
-      message: "Failed to log into an account. please try again",
+      message: "Failed to log into an account. Please try again.",
     };
   }
 }
 
+
 export async function signOut() {
   const cookieStore = await cookies();
 
-  cookieStore.delete("session");
+  cookieStore.delete("session", { path: "/" });
 }
 
 export async function setSessionCookie(idToken: string) {
-  const cookieStore = await cookies();
-  const sessionCookie = await auth.createSessionCookie(idToken, {
-    expiresIn: ONE_WEEK * 1000,
-  });
+  if (!idToken || typeof idToken !== "string") {
+    throw new Error("Invalid ID token received.");
+  }
 
-  cookieStore.set("session", sessionCookie, {
-    maxAge: ONE_WEEK,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    sameSite: "lax",
-  });
+  const cookieStore = await cookies();
+
+  try {
+    const sessionCookie = await auth.createSessionCookie(idToken, {
+      expiresIn: ONE_WEEK * 1000,
+    });
+
+    cookieStore.set("session", sessionCookie, {
+      maxAge: ONE_WEEK,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      sameSite: "lax",
+    });
+  } catch (error) {
+    console.error("Failed to create session cookie:", error);
+    throw new Error("Could not create session cookie.");
+  }
 }
+
 
 export async function getCurrentUser(): Promise<User | null> {
   const cookieStore = await cookies();
@@ -116,7 +141,6 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 export async function isAuthenticated() {
-  const user = getCurrentUser();
+  const user =await getCurrentUser();
   return !!user;
 }
-

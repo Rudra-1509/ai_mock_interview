@@ -9,9 +9,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-const page = async ({ params }: RouteParams) => {
+const Feedback = async ({ params }: RouteParams) => {
   const { id } = await params;
   const user = await getCurrentUser();
+    if(!user)
+  {
+    redirect('/sign-in');
+  }
   const interview = await getInterviewById(id);
   if (!interview) redirect("/");
 

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
-import { generator, interviewer } from "@/constants/index";
+import { assistantOptions, generator, interviewer, interviewerOptions } from "@/constants/index";
 import { createFeedback } from "@/lib/actions/general.action";
 
 enum CallStatus {
@@ -104,19 +104,11 @@ const Agent = ({
     setCallStatus(CallStatus.CONNECTING);
 
     if (type === "generate") {
-      await vapi.start(
-        undefined,
-        {
-          variableValues: {
-            username: userName,
-            userid: userId,
-          },
-          clientMessages: ["transcript"],
-          serverMessages: [],
-        },
-        undefined,
-        generator
-      );
+      await vapi.start(assistantOptions,{
+        variableValues: {
+          userid:userId
+        }
+      });
     } else {
       let formattedQuestions = "";
       if (questions) {
@@ -124,7 +116,7 @@ const Agent = ({
           .map((question) => `- ${question}`)
           .join("\n");
       }
-      await vapi.start(interviewer, {
+      await vapi.start(interviewerOptions, {
         variableValues: {
           questions: formattedQuestions,
         },

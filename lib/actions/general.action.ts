@@ -8,7 +8,7 @@ import { feedbackSchema } from "@/constants";
 
 export async function createFeedback(params: CreateFeedbackParams) {
   const { interviewId, userId, transcript, feedbackId } = params;
-
+  if(!userId) return null;
   try {
     const formattedTranscript = transcript
       .map(
@@ -37,6 +37,11 @@ export async function createFeedback(params: CreateFeedbackParams) {
       system:
         "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
     });
+    if (!object) {
+  console.error("LLM output is null or malformed.");
+  return { success: false };
+}
+
 
     const feedback = {
       interviewId: interviewId,
@@ -67,6 +72,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
 }
 
 export async function getInterviewById(id: string): Promise<Interview | null> {
+  if(!id) return null;
   const interview = await db.collection("interviews").doc(id).get();
 
   return interview.data() as Interview | null;
@@ -76,6 +82,7 @@ export async function getFeedbackByInterviewId(
   params: GetFeedbackByInterviewIdParams
 ): Promise<Feedback | null> {
   const { interviewId, userId } = params;
+  if(!userId) return null;
 
   const querySnapshot = await db
     .collection("feedback")
@@ -94,7 +101,6 @@ export async function getLatestInterviews(
   params: GetLatestInterviewsParams
 ): Promise<Interview[] | null> {
   const { userId, limit = 20 } = params;
-
   const interviews = await db
     .collection("interviews")
     .orderBy("createdAt", "desc")
@@ -112,6 +118,7 @@ export async function getLatestInterviews(
 export async function getInterviewsByUserId(
   userId: string
 ): Promise<Interview[] | null> {
+  if(!userId) return null;
   const interviews = await db
     .collection("interviews")
     .where("userId", "==", userId)
