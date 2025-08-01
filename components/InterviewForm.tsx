@@ -74,13 +74,14 @@ const InterviewForm = () => {
     }
   }
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
+return (
+  <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="w-full max-w-xl flex flex-col items-center">
       <h2 className="text-2xl font-semibold mb-6 text-center">
         Interview Generation
       </h2>
 
-      <div className="w-full max-w-xl">
+      <div className="w-full">
         <div className="card-border">
           <div className="card py-14 px-10 space-y-6">
             <div className="text-center space-y-1">
@@ -149,7 +150,8 @@ const InterviewForm = () => {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default InterviewForm;
