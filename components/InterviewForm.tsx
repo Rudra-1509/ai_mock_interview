@@ -75,15 +75,13 @@ const InterviewForm = () => {
   }
 
   return (
-    <>
-          <h2 className="text-2xl font-semibold mb-6 text-center">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <h2 className="text-2xl font-semibold mb-6 text-center">
         Interview Generation
       </h2>
-    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="card-border lg:min-w-[566px]">
         <div className="flex flex-col gap-6 card py-14 px-10">
           <div className="flex flex-col items-center text-center gap-1">
-            <h3>Starting Your Interview</h3>
             <h5 className="text-primary-100">
               Customize your mock interview to suit your needs.
             </h5>
@@ -148,7 +146,6 @@ const InterviewForm = () => {
         </div>
       </div>
     </div>
-    </>
   );
 };
 
