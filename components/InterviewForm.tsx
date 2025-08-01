@@ -8,7 +8,6 @@ import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
 import FormField from "./FormField";
 import { useRouter } from "next/navigation";
-// import { getCurrentUser } from "@/lib/actions/auth.action";
 
 const interviewFormSchema = () => {
   return z.object({
@@ -39,7 +38,6 @@ const InterviewForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const { type, role, level, techstack, amount } = values;
-      // const user = await getCurrentUser();
       const techstackArray = techstack
         .split(",")
         .map((tech) => tech.trim())
@@ -56,7 +54,6 @@ const InterviewForm = () => {
           level,
           techstack: techstackArray,
           amount,
-          // userid: user!.id,
         }),
       });
 
@@ -78,71 +75,73 @@ const InterviewForm = () => {
   }
 
   return (
-    <div className="card-border lg:min-w-[566px]">
-      <div className="flex flex-col gap-6 card py-14 px-10">
-        <div className="flex flex-col items-center text-center gap-1">
-          <h3>Starting Your Interview</h3>
-          <h5 className="text-primary-100">
-            Customize your mock interview to suit your needs.
-          </h5>
-        </div>
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="card-border lg:min-w-[566px]">
+        <div className="flex flex-col gap-6 card py-14 px-10">
+          <div className="flex flex-col items-center text-center gap-1">
+            <h3>Starting Your Interview</h3>
+            <h5 className="text-primary-100">
+              Customize your mock interview to suit your needs.
+            </h5>
+          </div>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full space-y-6 mt-4 form"
-          >
-            <FormField
-              control={form.control}
-              label="What type of interview would you like to practice?"
-              name="type"
-              type="select"
-              options={["Technical", "Behaviourial", "Mixed"]}
-            />
-
-            <FormField
-              control={form.control}
-              label="What role are you focusing on? Eg. Front End, Full Stack"
-              name="role"
-              placeholder="Select your role"
-              type="text"
-            />
-
-            <FormField
-              control={form.control}
-              label="What is your experience level?"
-              name="level"
-              type="select"
-              options={["Entry", "Mid", "Senior"]}
-            />
-
-            <FormField
-              control={form.control}
-              label="Which tech stack would you like to focus on?"
-              name="techstack"
-              placeholder="Select your preferred tech stack"
-              type="text"
-            />
-
-            <FormField
-              control={form.control}
-              label="How many questions would you want to have for the interview?"
-              name="amount"
-              type="number"
-              min={1}
-            />
-
-            <Button
-              className="btn"
-              type="submit"
-              disabled={form.formState.isSubmitting}
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="w-full space-y-6 mt-4 form"
             >
-              {form.formState.isSubmitting
-                ? "Generating..."
-                : "Generate Interview"}
-            </Button>
-          </form>
-        </Form>
+              <FormField
+                control={form.control}
+                label="What type of interview would you like to practice?"
+                name="type"
+                type="select"
+                options={["Technical", "Behaviourial", "Mixed"]}
+              />
+
+              <FormField
+                control={form.control}
+                label="What role are you focusing on? Eg. Front End, Full Stack"
+                name="role"
+                placeholder="Select your role"
+                type="text"
+              />
+
+              <FormField
+                control={form.control}
+                label="What is your experience level?"
+                name="level"
+                type="select"
+                options={["Entry", "Mid", "Senior"]}
+              />
+
+              <FormField
+                control={form.control}
+                label="Which tech stack would you like to focus on?"
+                name="techstack"
+                placeholder="Select your preferred tech stack"
+                type="text"
+              />
+
+              <FormField
+                control={form.control}
+                label="How many questions would you want to have for the interview?"
+                name="amount"
+                type="number"
+                min={1}
+              />
+
+              <Button
+                className="btn"
+                type="submit"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting
+                  ? "Generating..."
+                  : "Generate Interview"}
+              </Button>
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
   );
