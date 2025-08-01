@@ -8,13 +8,17 @@ import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const Feedback = async ({ params }: RouteParams) => {
   const { id } = await params;
   const user = await getCurrentUser();
-    if(!user)
-  {
-    redirect('/sign-in');
+  if (!user) {
+    redirect("/sign-in");
   }
   const interview = await getInterviewById(id);
   if (!interview) redirect("/");
@@ -52,7 +56,9 @@ const Feedback = async ({ params }: RouteParams) => {
             <Image src="/calendar.svg" width={22} height={22} alt="calendar" />
             <p>
               {feedback?.createdAt
-                ? dayjs(feedback.createdAt).format("MMM D, YYYY h:mm A")
+                ? dayjs(feedback.createdAt)
+                    .tz("Asia/Kolkata")
+                    .format("MMM D, YYYY h:mm A")
                 : "N/A"}
             </p>
           </div>
