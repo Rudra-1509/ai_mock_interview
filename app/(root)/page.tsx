@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import InterviewCard from "@/components/InterviewCard";
@@ -10,9 +11,8 @@ import {
 
 const Home = async () => {
   const user = await getCurrentUser();
-  if (!user?.id) {
-  // handle no user case — maybe redirect or show message
-  throw new Error("User not authenticated or user ID missing");
+if (!user?.id) {
+  redirect("/sign-in");
 }
 
   const [userInterviews, latestInterviews] = await Promise.all([
@@ -69,7 +69,7 @@ const Home = async () => {
         <h2>Try Other&apos;s Interview</h2>
         <div className="interviews-section">
           {hasUpcomingInterviews ? (
-            userInterviews!.map((interview) => (
+            latestInterviews!.map((interview) => (
               <InterviewCard
                 key={interview.id}
                 userId={user?.id}
