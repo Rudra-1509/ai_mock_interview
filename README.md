@@ -2,7 +2,7 @@
 
 An AI-powered, **voice-based mock interview platform** that simulates real interview experiences and gives actionable feedback — right in your browser.
 
-🌐 **Live App:** [ai-mock-interview.vercel.app](https://ai-mock-interview-a8r3qg1s9-rudra-1509s-projects.vercel.app/interview)
+🌐 **Live App:** [ai-mock-interview.vercel.app](https://ai-mock-interview-a8r3qg1s9-rudra-1509s-projects.vercel.app/)
 
 ---
 
