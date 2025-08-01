@@ -101,7 +101,6 @@ export async function getLatestInterviews(
   params: GetLatestInterviewsParams
 ): Promise<Interview[] | null> {
   const { userId, limit = 20 } = params;
-
   const interviews = await db
     .collection("interviews")
     .where("finalized", "==", true)

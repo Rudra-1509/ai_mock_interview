@@ -79,70 +79,73 @@ const InterviewForm = () => {
       <h2 className="text-2xl font-semibold mb-6 text-center">
         Interview Generation
       </h2>
-      <div className="card-border lg:min-w-[566px]">
-        <div className="flex flex-col gap-6 card py-14 px-10">
-          <div className="flex flex-col items-center text-center gap-1">
-            <h5 className="text-primary-100">
-              Customize your mock interview to suit your needs.
-            </h5>
-          </div>
 
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="w-full space-y-6 mt-4 form"
-            >
-              <FormField
-                control={form.control}
-                label="What type of interview would you like to practice?"
-                name="type"
-                type="select"
-                options={["Technical", "Behaviourial", "Mixed"]}
-              />
+      <div className="w-full max-w-xl">
+        <div className="card-border">
+          <div className="card py-14 px-10 space-y-6">
+            <div className="text-center space-y-1">
+              <h5 className="text-primary-100">
+                Customize your mock interview to suit your needs.
+              </h5>
+            </div>
 
-              <FormField
-                control={form.control}
-                label="What role are you focusing on? Eg. Front End, Full Stack"
-                name="role"
-                placeholder="Select your role"
-                type="text"
-              />
-
-              <FormField
-                control={form.control}
-                label="What is your experience level?"
-                name="level"
-                type="select"
-                options={["Entry", "Mid", "Senior"]}
-              />
-
-              <FormField
-                control={form.control}
-                label="Which tech stack would you like to focus on?"
-                name="techstack"
-                placeholder="Select your preferred tech stack"
-                type="text"
-              />
-
-              <FormField
-                control={form.control}
-                label="How many questions would you want to have for the interview?"
-                name="amount"
-                type="number"
-                min={1}
-              />
-
-              <Button
-                className="btn"
-                type="submit"
-                disabled={form.formState.isSubmitting}
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6 mt-4"
               >
-                {form.formState.isSubmitting
-                  ? "Generating..."
-                  : "Generate Interview"}
-              </Button>
-            </form>
-          </Form>
+                <FormField
+                  control={form.control}
+                  label="What type of interview would you like to practice?"
+                  name="type"
+                  type="select"
+                  options={["Technical", "Behaviourial", "Mixed"]}
+                />
+
+                <FormField
+                  control={form.control}
+                  label="What role are you focusing on? Eg. Front End, Full Stack"
+                  name="role"
+                  placeholder="Select your role"
+                  type="text"
+                />
+
+                <FormField
+                  control={form.control}
+                  label="What is your experience level?"
+                  name="level"
+                  type="select"
+                  options={["Entry", "Mid", "Senior"]}
+                />
+
+                <FormField
+                  control={form.control}
+                  label="Which tech stack would you like to focus on?"
+                  name="techstack"
+                  placeholder="Select your preferred tech stack"
+                  type="text"
+                />
+
+                <FormField
+                  control={form.control}
+                  label="How many questions would you want to have for the interview?"
+                  name="amount"
+                  type="number"
+                  min={1}
+                />
+
+                <Button
+                  className="btn w-full"
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting
+                    ? "Generating..."
+                    : "Generate Interview"}
+                </Button>
+              </form>
+            </Form>
+          </div>
         </div>
       </div>
     </div>
