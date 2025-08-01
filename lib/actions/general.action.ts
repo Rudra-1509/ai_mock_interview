@@ -101,11 +101,13 @@ export async function getLatestInterviews(
   params: GetLatestInterviewsParams
 ): Promise<Interview[] | null> {
   const { userId, limit = 20 } = params;
+
   const interviews = await db
     .collection("interviews")
-    .orderBy("createdAt", "desc")
     .where("finalized", "==", true)
     .where("userId", "!=", userId)
+    .orderBy("userId") // Required for Firestore to support `!=`
+    .orderBy("createdAt", "desc")
     .limit(limit)
     .get();
 
@@ -114,6 +116,7 @@ export async function getLatestInterviews(
     ...doc.data(),
   })) as Interview[];
 }
+
 
 export async function getInterviewsByUserId(
   userId: string
