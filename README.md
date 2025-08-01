@@ -60,10 +60,10 @@ Here are some key visuals from the app:
 
 | Screenshot | Description |
 |------------|-------------|
-| ![Sign In](/assets/sign-in.png) | 🔐 User authentication screen using Firebase |
-| ![Home Page](/assets/land-page.png) | 🏠 Landing page with option to issue or take interviews |
-| ![Issue Interview](/assets/issue-interview.png) | 🛠️ Form to customize and generate your AI interview |
-| ![Evaluation](/assets/eval.png) | 📊 AI-generated feedback and score breakdown after the interview |
+| ![Sign In](./public/assets/sign-in.png) | 🔐 User authentication screen using Firebase |
+| ![Home Page](./public//assets/land-page.png) | 🏠 Landing page with option to issue or take interviews |
+| ![Issue Interview](./public/assets/issue-interview.png) | 🛠️ Form to customize and generate your AI interview |
+| ![Evaluation](./public/assets/eval.png) | 📊 AI-generated feedback and score breakdown after the interview |
 
 ---
 
