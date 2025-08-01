@@ -76,7 +76,9 @@ const InterviewForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <h3>Interview generation</h3>
+      <h2 className="text-2xl font-semibold mb-6 text-center">
+        Interview Generation
+      </h2>
       <div className="card-border lg:min-w-[566px]">
         <div className="flex flex-col gap-6 card py-14 px-10">
           <div className="flex flex-col items-center text-center gap-1">
