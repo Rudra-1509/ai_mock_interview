@@ -73,13 +73,14 @@ const InterviewForm = () => {
       );
     }
   }
-return (
-  <div className="min-h-screen flex items-center justify-center px-4">
-    <div className="w-full max-w-xl">
-      <div className="card-border">
-        <div className="card py-14 px-10 space-y-6">
-          <div className="text-center space-y-1">
-            <h2 className="text-2xl font-semibold">Interview Generation</h2>
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center px-4">
+      <h3>Interview generation</h3>
+      <div className="card-border lg:min-w-[566px]">
+        <div className="flex flex-col gap-6 card py-14 px-10">
+          <div className="flex flex-col items-center text-center gap-1">
+            <h3>Starting Your Interview</h3>
             <h5 className="text-primary-100">
               Customize your mock interview to suit your needs.
             </h5>
@@ -88,7 +89,7 @@ return (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6 mt-4"
+              className="w-full space-y-6 mt-4 form"
             >
               <FormField
                 control={form.control}
@@ -131,7 +132,7 @@ return (
               />
 
               <Button
-                className="btn w-full"
+                className="btn"
                 type="submit"
                 disabled={form.formState.isSubmitting}
               >
@@ -144,9 +145,7 @@ return (
         </div>
       </div>
     </div>
-  </div>
-);
-
+  );
 };
 
 export default InterviewForm;
