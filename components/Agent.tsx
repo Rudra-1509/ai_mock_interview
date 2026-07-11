@@ -118,7 +118,6 @@ const Agent = ({
         level,
         techstack: techstack.join(", "),
       },
-      clientMessages: "transcript"
     });
   };
   const handleDisconnect = async () => {
