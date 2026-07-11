@@ -92,7 +92,7 @@ Make sure you have:
 4. Add the required environment variables
    ```env
    NEXT_PUBLIC_VAPI_WEB_TOKEN=your_vapi_web_token
-   GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_key
+   GROQ_GENERATIVE_AI_API_KEY=your_google_ai_key
    NEXT_PUBLIC_BASE_URL=http://localhost:3000
    SERVER_URL=http://localhost:3000
 
