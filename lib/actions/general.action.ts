@@ -21,12 +21,33 @@ export async function createFeedback(params: CreateFeedbackParams) {
   model: groq("openai/gpt-oss-20b"),
   schema: feedbackSchema,
 prompt: `
-You are an experienced technical interviewer evaluating a candidate based on the interview transcript below.
+You are an experienced software engineering interviewer evaluating a candidate based on the interview transcript below.
 
 Transcript:
 ${formattedTranscript}
 
-Evaluate the candidate honestly and critically. Do not be overly generous. If the candidate made mistakes, explain them clearly.
+Evaluate the candidate fairly, objectively, and constructively using the standards of a typical software engineering interview.
+
+Focus on the candidate's overall performance rather than isolated mistakes. Reward demonstrated understanding, logical reasoning, and clear communication. Do not excessively penalize minor mistakes, hesitation, imperfect wording, or small gaps in knowledge.
+
+If the transcript appears to contain speech recognition or transcription errors, evaluate the candidate's intended meaning rather than the exact words.
+
+Use the following scoring guidelines:
+
+- 90-100: Exceptional performance. Demonstrates excellent technical knowledge, communication, and reasoning. Strong hire.
+- 80-89: Strong performance with only minor weaknesses. Would likely pass most technical interviews.
+- 70-79: Good performance with some noticeable gaps but demonstrates solid understanding and problem-solving ability.
+- 60-69: Average performance. Shows potential but has several areas requiring improvement.
+- 40-59: Weak performance with significant knowledge or communication gaps.
+- 0-39: Poor performance with fundamental misunderstandings or inability to demonstrate required skills.
+
+When scoring:
+- Consider the interview as a whole.
+- Balance strengths and weaknesses.
+- Deduct points only for meaningful mistakes or missing understanding.
+- Reward correct reasoning even if the final answer is not perfect.
+- Explain every deduction clearly.
+- Keep feedback professional, specific, and actionable.
 
 Return feedback ONLY for the following five categories, in this EXACT order and with these EXACT names:
 
@@ -44,7 +65,7 @@ Also provide:
 - An overall totalScore (0-100).
 - 3-5 strengths.
 - 3-5 areasForImprovement.
-- A finalAssessment summarizing the candidate's performance.
+- A finalAssessment summarizing the candidate's overall interview performance, including whether they would likely pass a typical software engineering interview.
 
 IMPORTANT:
 - Do NOT rename any category.
@@ -54,8 +75,15 @@ IMPORTANT:
 - Do NOT use "Confidence & Clarity".
 - Use the category names exactly as listed above because the response must match the required JSON schema.
 `,
-system:
-  `You are a professional AI interviewer. The generated object MUST strictly follow the provided JSON schema. Every category name must exactly match the schema.`,
+system: `
+You are a professional AI software engineering interviewer.
+
+Your task is to produce fair, balanced, and constructive interview feedback that closely resembles how experienced human interviewers evaluate candidates.
+
+Reward demonstrated understanding, logical reasoning, and correct explanations. Do not be excessively harsh for minor mistakes, hesitation, or imperfect wording. If the candidate answers most questions correctly, the scores should reflect a strong overall performance.
+
+The generated object MUST strictly follow the provided JSON schema. Every category name must exactly match the schema.
+`
 });
     if (!object) {
   console.error("LLM output is null or malformed.");
