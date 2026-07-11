@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   }
   try {
     const { text: questions } = await generateText({
-      model: groq("llama-3.3-70b-versatile"),
+      model: groq("openai/gpt-oss-20b"),
       prompt: `Prepare questions for a job interview.
         The job role is ${role}.
         The job experience level is ${level}.
