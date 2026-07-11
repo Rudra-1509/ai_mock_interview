@@ -11,17 +11,19 @@ import {
 
 const Home = async () => {
   const user = await getCurrentUser();
-if (!user?.id) {
-  redirect("/sign-in");
-}
+  if (!user?.id) {
+    redirect("/sign-in");
+  }
+
+  const userId = user.id;
 
   const [userInterviews, latestInterviews] = await Promise.all([
-    await getInterviewsByUserId(user?.id!),
-    await getLatestInterviews({ userId: user?.id! }),
+    getInterviewsByUserId(userId),
+    getLatestInterviews({ userId }),
   ]);
 
-  const hasPastInterviews = userInterviews?.length > 0 || 0;
-  const hasUpcomingInterviews = latestInterviews?.length > 0 ;
+  const hasPastInterviews = (userInterviews?.length ?? 0) > 0;
+  const hasUpcomingInterviews = (latestInterviews?.length ?? 0) > 0;
   return (
     
     <>
@@ -52,7 +54,7 @@ if (!user?.id) {
             userInterviews!.map((interview) => (
               <InterviewCard
                 key={interview.id}
-                userId={user?.id}
+                userId={userId}
                 interviewId={interview.id}
                 role={interview.role}
                 type={interview.type}
@@ -72,7 +74,7 @@ if (!user?.id) {
             latestInterviews!.map((interview) => (
               <InterviewCard
                 key={interview.id}
-                userId={user?.id}
+                userId={userId}
                 interviewId={interview.id}
                 role={interview.role}
                 type={interview.type}

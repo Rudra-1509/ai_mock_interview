@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         throw new Error("Questions is not a valid array");
       }
     } catch (error) {
-      console.error("Failed to parse questions from LLM:", questions);
+      console.error("Failed to parse questions from LLM:", error);
       return NextResponse.json(
         {
           success: false,

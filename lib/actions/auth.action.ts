@@ -29,10 +29,11 @@ export async function signUp(params: SignUpParams) {
       success: true,
       message: "Account created successfully. please sign in",
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating a user", error);
 
-    if (error.code === "auth/email-already-exists") {
+    const firebaseError = error as { code?: string };
+    if (firebaseError.code === "auth/email-already-exists") {
       return {
         success: false,
         message: "This email is already in use.",
@@ -84,7 +85,7 @@ export async function SignIn(params: SignInParams) {
 export async function signOut() {
   const cookieStore = await cookies();
 
-  cookieStore.delete("session", { path: "/" });
+  cookieStore.delete({ name: "session", path: "/" });
 }
 
 export async function setSessionCookie(idToken: string) {

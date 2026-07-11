@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Mona_Sans } from "next/font/google";
+// @ts-expect-error: Allow side-effect import for global CSS without module declarations
 import "./globals.css";
 import { Toaster } from "sonner";
 

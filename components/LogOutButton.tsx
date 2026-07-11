@@ -13,9 +13,14 @@ const LogoutButton = () => {
       await signOut();
       toast.success("Logged out successfully");
       router.push("/sign-in");
-    } catch (error: any) {
-      console.error(error.message);
-      toast.error(error.message || "Something went wrong");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        toast.error(error.message || "Something went wrong");
+      } else {
+        console.error(error);
+        toast.error("Something went wrong");
+      }
     }
   };
 

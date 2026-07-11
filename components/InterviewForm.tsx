@@ -9,9 +9,10 @@ import { toast } from "sonner";
 import FormField from "./FormField";
 import { useRouter } from "next/navigation";
 
+
 const interviewFormSchema = () => {
   return z.object({
-    type: z.enum(["Technical", "Behaviourial", "Mixed"]),
+    type: z.enum(["Technical", "behavioral", "Mixed"]),
     role: z.string(),
     level: z.enum(["Entry", "Mid", "Senior"]),
     techstack: z.string(),
@@ -43,7 +44,7 @@ const InterviewForm = () => {
         .map((tech) => tech.trim())
         .filter(Boolean);
 
-      const response = await fetch("/api/vapi/generate", {
+      const response = await fetch(`/api/vapi/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -96,7 +97,7 @@ const InterviewForm = () => {
                 label="What type of interview would you like to practice?"
                 name="type"
                 type="select"
-                options={["Technical", "Behaviourial", "Mixed"]}
+                options={["Technical", "behavioral", "Mixed"]}
               />
 
               <FormField

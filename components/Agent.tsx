@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
-import { assistantOptions, generator, interviewer, interviewerOptions } from "@/constants/index";
+import { interviewer } from "@/constants/index";
 import { createFeedback } from "@/lib/actions/general.action";
 
 enum CallStatus {
@@ -24,17 +24,19 @@ interface SavedMessage {
 const Agent = ({
   userName,
   userId,
-  type,
   interviewId,
   feedbackId,
   questions,
+  role,
+  level,
+  techstack,
 }: AgentProps) => {
   const router = useRouter();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [messages, setMessages] = useState<SavedMessage[]>([]);
   const [lastMessage, setLastMessage] = useState<string>("");
-
+  const [feedbackGenerated, setFeedbackGenerated] = useState(false);
   useEffect(() => {
     const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
     const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
@@ -53,7 +55,7 @@ const Agent = ({
     const onSpeechStart = () => setIsSpeaking(true);
     const onSpeechEnd = () => setIsSpeaking(false);
 
-    const onError = (error: Error) => console.log("Error", error);
+    const onError = (error: Error) => console.log("Vapi Error", error);
 
     vapi.on("call-start", onCallStart);
     vapi.on("call-end", onCallEnd);
@@ -77,57 +79,49 @@ const Agent = ({
       setLastMessage(messages[messages.length - 1].content);
     }
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-      const { success, feedbackId: id } = await createFeedback({
+      const result = await createFeedback({
         interviewId: interviewId!,
         userId: userId!,
         transcript: messages,
         feedbackId,
       });
 
-      if (success && id) {
-        router.push(`/interview/${interviewId}/feedback`);
-      } else {
+      if (!result || !result.success || !result.feedbackId) {
         console.log("Error saving feedback");
         router.push("/");
+        return;
       }
+
+      router.push(`/interview/${interviewId}/feedback`);
     };
-    if (callStatus === CallStatus.FINISHED) {
-      if (type === "generate") {
-        router.push("/");
-      } else {
-        handleGenerateFeedback(messages);
-      }
+
+    if (
+      callStatus === CallStatus.FINISHED &&
+      !feedbackGenerated &&
+      messages.length > 0
+    ) {
+      setFeedbackGenerated(true);
+      handleGenerateFeedback(messages);
     }
-  }, [messages, callStatus, feedbackId, interviewId, router, type, userId]);
+  }, [messages, callStatus, feedbackId, feedbackGenerated,interviewId, router, userId]);
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
 
-    if (type === "generate") {
-      await vapi.start(assistantOptions,{
-        variableValues: {
-          userid:userId
-        }
-      });
-    } else {
-      let formattedQuestions = "";
-      if (questions) {
-        formattedQuestions = questions
-          .map((question) => `- ${question}`)
-          .join("\n");
-      }
-      await vapi.start(interviewerOptions, {
-        variableValues: {
-          questions: formattedQuestions,
-        },
-        clientMessages: ["transcript"],
-        serverMessages: [],
-      });
-    }
-  };
+    const formattedQuestions =
+      questions?.map((q, i) => `${i + 1}. ${q}`).join("\n\n") ?? "";
 
+    await vapi.start(interviewer, {
+      variableValues: {
+        questions: formattedQuestions,
+        role,
+        level,
+        techstack: techstack.join(", "),
+      },
+      clientMessages: "transcript"
+    });
+  };
   const handleDisconnect = async () => {
-    setCallStatus(CallStatus.FINISHED);
     vapi.stop();
   };
 
@@ -171,7 +165,7 @@ const Agent = ({
               key={lastMessage}
               className={cn(
                 "transition-opacity duration-500 opacity-0",
-                "animate-fadeIn opacity-100"
+                "animate-fadeIn opacity-100",
               )}
             >
               {lastMessage}
@@ -186,7 +180,7 @@ const Agent = ({
             <span
               className={cn(
                 "absolute animate-ping rounded-full opacity-75",
-                callStatus !== "CONNECTING" && "hidden"
+                callStatus !== "CONNECTING" && "hidden",
               )}
             />
             <span>{isCallInactiveOrFinished ? "Call" : ". . ."}</span>
